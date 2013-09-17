@@ -1,0 +1,232 @@
+<html>
+<head>
+  <title>Javascript TO LIST</title>
+  <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/foundation/4.3.1/css/foundation.css">
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+  <style type="text/css">
+  	body {
+  		background: red;
+  	}
+  	h3 {text-align: center;}
+  	#message-header {
+  		margin-top: 10px;
+  	}
+  	#flash-message {
+  		padding: 5px;
+  		border: 1px solid transparent;
+  	}
+  	#flash-message.error {
+		color: red;
+		border: 1px solid red;
+		background: #fcb3bc;
+  	}
+  	#flash-message.good-vibes {
+		color: green;
+		border: 1px solid green;
+		background: #c0d890;
+  	}
+	.coolbox {
+		border: 1px solid #000000;
+		background: #fff;
+		margin-top: 20px;
+		-webkit-border-radius: 10px;
+    	border-radius: 10px;
+    	-webkit-box-shadow:  5px 5px 5px 5px rgba(120, 120, 120, .6);
+        box-shadow:  5px 5px 5px 5px rgba(120, 120, 120, .6);
+	}
+	#add-todo-item .button.small {
+		margin-top: 15px;
+	}
+	.green-txt {
+		color: green;
+	}
+	#todo-list p span.name {
+		font-size: 20px;
+	}
+	#todo-list p {
+		border-bottom: 1px solid #cccccc;
+	}
+	#todo-list p:last-child {
+		border-bottom: 0px solid #cccccc;
+	}
+
+  </style>
+</head>
+<body>
+
+<div class="row" id="message-header">
+	<div class="large-12 columns">
+		<div class="large-3 columns">
+			<span>&nbsp;</span>
+		</div>
+		<div class="large-6 columns flashmsg">
+			<div id="flash-message"></div>
+		</div>
+		<div class="large-3 columns">
+			<span>&nbsp;</span>
+		</div>
+	</div>	
+</div>
+<div class="row">
+	<div class="large-12 columns">
+		<div class="large-3 columns">
+			<span>&nbsp;</span>
+		</div>
+		<div class="large-6 columns coolbox">
+			<h3>Todos</h3>
+			
+			
+			<form id="add-todo-item" class="clearfix">
+				<div class="large-10 columns">
+					<label>New Todo Item:</label>
+						<input type="text" placeholder="What needs to be done?" id="new-todo-item-title" />
+				</div>
+				<div class="large-2 columns">
+					<input class="submit button small" type="submit" value="Add" />
+				</div>
+			</form>
+			<br clear="all" />
+			<div id="mark-all-as-complete-wrapper">
+				<p>Mark all as complete: <input type="button" id="mark-all-as-complete" value="Complete" /></p>
+			</div>
+			
+
+			<div id="todo-list" class="clearfix"></div>
+		</div>
+		<div class="large-3 columns">
+			<span>&nbsp;</span>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+<div id="templates">
+	<script class="todo-item" type="text/template">
+		<p>
+			<% if (complete == true) {%>
+				<span class="name">&bull; <%= name %></span> 
+				<span> | </span>
+				<span class="green-txt"><strong><i class="icon-ok"></i> Completed</strong></span>
+			<% } else { %>
+				<span><input type="checkbox" class="check-todo" data-title="<%= name %>" data-id="<%= id %>" /></span>
+				<span class="name"><%= name %></span> 
+			<% } %>
+		</p>
+	</script>
+	<script id="total-num-todo-item" type="text/template">
+		<p><%= %> items left ...</p>
+	</script>
+</div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<script type="text/javascript">
+	var newTodoTitle;
+	var toDoListDiv = $('#todo-list');
+	var flashMessage = $('#flash-message');
+	var tasks = [
+	  // {
+	  //   id: 0,
+	  //   name: 'Create TODO list',
+	  //   complete: true
+	  // },
+	  // {
+	  //   id: 1,
+	  //   name: 'Implement Exercise',
+	  //   complete: false
+	  // }
+	];
+
+	var TodoList = function(array) {
+		this.list = array;
+		this.updateList(this.list);
+	};
+	TodoList.prototype.updateList = function () {
+		var todoTemplateHtml = $('#templates .todo-item').html();
+	    var scoreTemplate = _.template(todoTemplateHtml);
+	    var newTodoListHtml;
+	    for (var i = 0; i < this.list.length; i++) {
+	        newTodoListHtml = scoreTemplate(this.list[i]);
+	        toDoListDiv.append(newTodoListHtml);
+	    }
+	};
+	TodoList.prototype.addToList = function(todoItem) {
+		var arrayLength = this.list.length;
+		//var newID = arrayLength + 1;
+		var newTodoItem = {
+			id: arrayLength,
+			name: todoItem, 
+			complete: false
+		};
+		this.list.push(newTodoItem);
+		this.updateList();
+	};
+	TodoList.prototype.updateTodoStatus = function(thisTodoID, thisIfComplete) {
+		for (var i = 0; i < this.list.length; i++) {
+
+	        if (this.list[i].id === thisTodoID) {
+	        	if (thisIfComplete === true) {
+	        		this.list[i].complete = true;
+	        	} else {
+	        		this.list[i].complete = false;
+	        	}
+	        }
+	        toDoListDiv.html('');
+	        this.updateList();
+	        checkItemOff();
+	    }
+	};
+	TodoList.prototype.updateTotalNumber = function() {
+
+	};
+	mylist = new TodoList(tasks);
+
+
+	$('#add-todo-item .submit').on('click', function(e) {
+    	e.preventDefault();
+    	newTodoTitle = $('#add-todo-item #new-todo-item-title').val();
+    	if (newTodoTitle.length !== 0) {
+    		toDoListDiv.html('');
+	    	mylist.addToList(newTodoTitle);
+	    	$('#add-todo-item')[0].reset();
+	    	checkItemOff();
+	    	flashMessage.removeClass('error').addClass('good-vibes').html('Todo Item Added!').show();
+	    	if ($(flashMessage).hasClass('good-vibes')) {
+				setTimeout("$(flashMessage).fadeOut('fast')", 2000); 
+			}
+    	} else {
+    		flashMessage.removeClass('good-vibes').addClass('error').html('You cannot enter an empty todo item.  Silly ;) ').show();
+    	}
+    });
+
+    // FUNCTION TO MARK TODO ITEM AS DONE
+    var checkItemOff = function() {
+	    $('.check-todo').unbind('click');
+	    $('.check-todo').bind('click',function(e) {
+	    	var thisTodoID = $(this).data('id');
+	    	if($(this).attr('checked', 'checked')) {
+	    		var thisIfComplete = true; 
+	    	} else {
+	    		var thisIfComplete = false; 
+	    	}
+	    	mylist.updateTodoStatus(thisTodoID, thisIfComplete);
+	    });
+	};
+	checkItemOff();
+
+	$('#mark-all-as-complete').on('click', function() {
+		alert('mark as completed');
+		// $(this).attr('checked', 'unchecked');
+
+	});
+
+
+
+</script>
+
+</body>
+</html>
