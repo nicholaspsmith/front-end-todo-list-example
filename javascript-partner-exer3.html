@@ -1,0 +1,57 @@
+<html>
+<head>
+  <title>Javascript Bare</title>
+</head>
+<body>
+
+<script type="text/javascript">
+	var Electronic = function(type) {
+		this.type = type;
+		this.active = false;
+	};
+	Electronic.prototype.switch = function(bool) {
+		this.active = bool;
+	};
+	var Phone = function(name) {
+		//Electronic.call(this, 'phone');
+		this.name = name;
+	};
+	Phone.prototype = new Electronic('phone');
+	Phone.prototype.ring = function() {
+		return 'Ring Ring!';
+	};
+	var Nexus = function(owner) {
+		//Phone.call(this, this.type);
+		this.owner = owner;
+		this.type = 'phone';
+		this.name = 'Nexus';
+	};
+	Nexus.prototype = new Phone('Nexus');
+
+
+	// TESTS THAT SHOULD PASS
+	var computer = new Electronic('computer');
+	console.log("It should be of type computer:", computer.type);
+	console.log("It should have active false:", computer.active);
+	computer.switch(true);
+	console.log("It should be able to turn on:", computer.active);
+
+	var phone = new Phone('iPhone');
+	console.log("\nIt should be of type phone:", phone.type);
+	console.log("It should have active false:", phone.active);
+	console.log("It should be named iPhone:", phone.name);
+	phone.switch(true);
+	console.log("It should be able to turn on:", phone.active);
+
+	var nexus = new Nexus('Bob');
+	console.log("\nIt should be of type phone:", nexus.type);
+	console.log("It should have active false:", nexus.active);
+	console.log("It should be named Nexus:", nexus.name);
+	console.log("Its owner should be Bob:", nexus.owner);
+	console.log("It should have a ringtone:", nexus.ring());
+	nexus.switch(true);
+	console.log("It should be able to turn on:", nexus.active);
+</script>
+
+</body>
+</html>
